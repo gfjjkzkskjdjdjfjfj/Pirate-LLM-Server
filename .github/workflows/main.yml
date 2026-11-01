@@ -10,9 +10,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Select latest Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app
-
       - name: Install dependencies
         run: |
           # Если проекту нужны дополнительные зависимости (например, CocoaPods), они установятся здесь.
