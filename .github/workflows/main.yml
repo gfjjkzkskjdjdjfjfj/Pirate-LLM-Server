@@ -1,0 +1,42 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - name: Install dependencies
+        run: |
+          # Если проекту нужны дополнительные зависимости (например, CocoaPods), они установятся здесь.
+          # Для базового проекта xcodebuild этого обычно достаточно.
+          echo "Preparing build..."
+
+      - name: Build Xcode Project
+        run: |
+          xcodebuild -project "Pirate LLM Server.xcodeproj" \
+                     -scheme "Pirate LLM Server" \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     CODE_SIGNING_ALLOWED=NO \
+                     ONLY_ACTIVE_ARCH=NO \
+                     clean build
+
+      - name: Create IPA Package
+        run: |
+          mkdir -p Payload
+          cp -r build/Release-iphoneos/*.app Payload/
+          zip -r Pirate-LLM-Server.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pirate-LLM-Server-Unsigned
+          path: Pirate-LLM-Server.ipa
